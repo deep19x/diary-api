@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const User = require('../model/user');
 
 module.exports.registerUser = async (req,res) => {
@@ -20,5 +22,40 @@ module.exports.registerUser = async (req,res) => {
         res.status(200).json({message:"User Registered!"});
     } catch (error){
         res.status(500).json({message:"User Registration Failed!"});
+    }
+}
+
+module.exports.loginUser = async(req,res) => {
+    try {
+        const {name,email,password} = req.body;
+        const user = await User.findOne({email:email});
+
+        if(!user){
+            return res.status(500).json({message:"User Not Found! Please Register First"});
+        }
+
+        const isMatch = await bcrypt.compare(password,user.password);
+        if(!isMatch){
+            return res.status(500).json({message:"Invalid Credentials"});
+        }
+
+        const token = jwt.sign(
+            {userId:user._id,userName:user.name,userEmail:user.email},
+            process.env.JWT_SECRET,
+            {expiresIn:'1h'}
+        );
+
+        res.cookie('token',token,{
+            httpOnly:true,
+            sameSite:'strict',
+            maxAge: 60*60*1000,
+        });
+
+        res.status(200).json({
+            message:"User Login Successful!",
+        });
+
+    } catch (error){
+        res.status(500).json({message:"Server Problem",error:error.message});
     }
 }
