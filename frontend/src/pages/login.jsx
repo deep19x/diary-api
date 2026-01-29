@@ -2,8 +2,11 @@ import { useState } from "react";
 import Input from "../components/input";
 import Button from "../components/button"
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Login(){
+
+    const navigate = useNavigate();
 
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
@@ -22,6 +25,8 @@ export default function Login(){
             localStorage.setItem("token",res.data.token);
 
             alert("Login Successful");
+
+            navigate('/dashboard');
         } catch (error){
             alert(error.response?.data?.message || "Login Failed!");
         } finally {
@@ -38,7 +43,7 @@ export default function Login(){
 
                 <Input type={"password"} placeholder={"Enter your password"} value={password} onChange={(e) => setPassword(e.target.value)}/>
 
-                <Button children={"Login"} loading={loading}/>
+                <Button loading={loading}>Login</Button>
             </form>
         </div>
     )
