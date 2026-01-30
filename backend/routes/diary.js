@@ -5,6 +5,7 @@ const {authMiddleware} = require('../middleware/auth');
 
 route.post('/create',authMiddleware,diaryController.createDiary);
 route.get('/',authMiddleware,diaryController.getAllDiaries);
+route.get('/:id', authMiddleware, diaryController.getDiaryById);
 route.put('/:id',authMiddleware,diaryController.updateDiary);
 route.delete('/:id',authMiddleware,diaryController.deleteDiary);
 

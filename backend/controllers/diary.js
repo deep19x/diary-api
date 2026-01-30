@@ -84,3 +84,22 @@ module.exports.deleteDiary = async(req,res) => {
         res.status(500).json({message:"Server Error",errorMsg:error});
     }
 };
+
+module.exports.getDiaryById = async(req,res) => {
+    try{
+        const {id} = req.params;
+
+        const diary = await Diary.findById({
+            _id : id,
+            userId:req.user.userId,
+        });
+
+        if(!diary){
+            return res.status(404).json({message:"Diary not found!"});
+        }
+
+        res.status(200).json(diary);
+    } catch (error) {
+        res.status(500).json({message:"Server Error"});
+    }
+};

@@ -5,6 +5,7 @@ import Register from './pages/register';
 import Dashboard from './pages/dashboard';
 import ProtectedRoute from './components/protectedRoute';
 import CreateDiary from './pages/createDiary';
+import EditDiary from './pages/editDiary';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             </ProtectedRoute>
           }/>
           <Route path='/create' element={<CreateDiary/>}/>
+          <Route path='/diary/edit/:id' element={<EditDiary/>}/>
       </Routes>
     </BrowserRouter>
   )
