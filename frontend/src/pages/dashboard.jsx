@@ -6,6 +6,7 @@ export default function Dashboard() {
     const [diaries, setDiaries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [message,setMessage] = useState("");
+    const [search,setSearch] = useState("");
 
     const navigate = useNavigate();
 
@@ -43,6 +44,12 @@ export default function Dashboard() {
             showMessage("Delete failed");
         }
     };
+    
+    const filteredDiaries = diaries.filter((diary) => {
+        return (
+            diary.title.toLowerCase().includes(search.toLowerCase()) || diary.content.toLowerCase().includes(search.toLowerCase())
+        )
+    });
 
 
     if (loading) return <p className="text-center mt-10">Loading...</p>;
@@ -58,15 +65,17 @@ export default function Dashboard() {
                 </div>
             )}
 
-            <button onClick={() => navigate('/create')} className="bg-green-600 text-white px-4 py-2 rounded mb-4">
+            <button onClick={() => navigate('/create')} className="bg-green-600 text-white px-4 py-2 rounded mb-4 block">
                 + New Diary
             </button>
+
+            <input type="text" className="border mx-auto mb-4 rounded-2xl w-100 text-center p-2 bg-white focus:bg-blue-200 " onChange={(e) => setSearch(e.target.value)} placeholder="Search Diary" value={search} />
 
             {diaries.length === 0 ? (
                 <p>No diaries yet</p>
             ) : (
                 <div className="grid gap-4">
-                    {diaries.map((diary) => (
+                    {filteredDiaries.map((diary) => (
                         <div key={diary._id} className="bg-white p-4 rounded shadow">
                             <h2 className="font-semibold">{diary.title}</h2>
                             <p className="text-gray-600">{diary.content}</p>
