@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/loader";
+import Error from "../components/error";
 
 export default function Dashboard() {
     const [diaries, setDiaries] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [message,setMessage] = useState("");
     const [search,setSearch] = useState("");
     const [page,setPage] = useState(1);
+    const [error, setError] = useState("");
+
     const pageSize = 5;
 
     const navigate = useNavigate();
@@ -22,10 +26,12 @@ export default function Dashboard() {
 
     const fetchDiaries = async () => {
         try {
+            setLoading(true);
+            setError("");
             const res = await api.get("/diary");
             setDiaries(res.data.diaries);
         } catch (error) {
-            showMessage("Failed to load diaries");
+            setError("Failed to load diaries");;
         } finally {
             setLoading(false);
         }
@@ -63,7 +69,8 @@ export default function Dashboard() {
     const paginatedDiaries = filteredDiaries.slice(startIndex,endIndex);
 
 
-    if (loading) return <p className="text-center mt-10">Loading...</p>;
+    if (loading) return <Loader/>;
+    if (error) return <Error message={error} onRetry={fetchDiaries} />;
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
