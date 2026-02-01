@@ -7,12 +7,18 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [message,setMessage] = useState("");
     const [search,setSearch] = useState("");
+    const [page,setPage] = useState(1);
+    const pageSize = 5;
 
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchDiaries();
     }, []);
+
+    useEffect(()=>{
+        setPage(1);
+    },[search]);
 
     const fetchDiaries = async () => {
         try {
@@ -51,6 +57,11 @@ export default function Dashboard() {
         )
     });
 
+    const totalPages = Math.ceil(filteredDiaries.length/pageSize);
+    const startIndex = (page - 1)*pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedDiaries = filteredDiaries.slice(startIndex,endIndex);
+
 
     if (loading) return <p className="text-center mt-10">Loading...</p>;
 
@@ -75,7 +86,7 @@ export default function Dashboard() {
                 <p>No diaries yet</p>
             ) : (
                 <div className="grid gap-4">
-                    {filteredDiaries.map((diary) => (
+                    {paginatedDiaries.map((diary) => (
                         <div key={diary._id} className="bg-white p-4 rounded shadow">
                             <h2 className="font-semibold">{diary.title}</h2>
                             <p className="text-gray-600">{diary.content}</p>
@@ -85,6 +96,12 @@ export default function Dashboard() {
                     ))}
                 </div>
             )}
+
+            <div className="flex justify-center items-center gap-4 mt-6">
+                <button className="px-2 bg-gray-500 text-white p-2 rounded-2xl disabled:cursor-not-allowed font-bold cursor-pointer" onClick={()=>setPage(page-1)} disabled={page === 1}>Prev</button>
+                <span>Page {page} of {totalPages}</span>
+                <button className="px-2 bg-gray-500 text-white p-2 rounded-2xl font-bold disabled:cursor-not-allowed cursor-pointer" disabled={page === totalPages} onClick={()=>setPage(page+1)}>Next</button>
+            </div>
         </div>
     );
 }
